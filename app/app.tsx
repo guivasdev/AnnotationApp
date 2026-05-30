@@ -41,7 +41,7 @@ const config = {
     Login: {
       path: "",
     },
-    Welcome: "welcome",
+    Home: "Home",
     Demo: {
       screens: {
         DemoShowroom: {
