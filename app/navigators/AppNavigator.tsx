@@ -32,7 +32,7 @@ const AppStack = () => {
   return (
     <Stack.Navigator
       screenOptions={{
-        headerShown: false,
+        headerShown: true,
         navigationBarColor: colors.background,
         contentStyle: {
           backgroundColor: colors.background,
