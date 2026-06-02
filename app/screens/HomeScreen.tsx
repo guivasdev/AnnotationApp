@@ -1,5 +1,5 @@
-import { FC, useEffect, useRef, useState } from "react"
-import { ScrollView, TextInput, TouchableWithoutFeedback, View, ViewStyle } from "react-native"
+import { FC, use, useEffect, useRef, useState } from "react"
+import { ScrollView, TextInput, TextStyle, TouchableWithoutFeedback, View, ViewStyle } from "react-native"
 import type { AppStackScreenProps } from "@/navigators/navigationTypes"
 import { Screen } from "@/components/Screen"
 
@@ -8,35 +8,60 @@ import { useAppTheme } from "@/theme/context"
 import { ThemedStyle } from "@/theme/types"
 import { Text } from "@/components/Text"
 import { loadString, saveString } from "@/utils/storage";
+import LottieView from 'lottie-react-native';
+import { useAudioPlayer } from 'expo-audio';
+
+
 
 interface HomeScreenProps extends AppStackScreenProps<"Home"> { }
 
+const FONT_SIZE = 20
+const LINE_HEIGHT = 32
 export const HomeScreen: FC<HomeScreenProps> = () => {
-  const { themed } = useAppTheme()
+  const { themed, theme } = useAppTheme()
 
   const [acaoUsuario, setAcaoUsuario] = useState('leitura');
   const [conteudo, setConteudo] = useState('');
   const [flag, setFlag] = useState(0);
+  const [animVisivle, setAnimVisivle] = useState(false);
   const [lines, setLines] = useState(25);
   const [newHeight, setNewHeight] = useState(0)
   const inputRef = useRef<TextInput>(null);
+  const animRef = useRef<LottieView>(null);
+  const audioSource = require('../../assets/sounds/plim.mp3');
+
+  const player = useAudioPlayer(audioSource);
+
+
+
+
   const LINES = 25
 
 
+
   useEffect(() => {
+    animRef.current?.play();
+
     const contentPersistent = loadString('conteudo')
     if (contentPersistent) {
       setConteudo(contentPersistent)
+
     }
 
   }, [])
   useEffect(() => {
     //salvamento do conteúdo
-    if (acaoUsuario == 'leitura' && conteudo.length >= 0 && flag)
+    if (acaoUsuario == 'leitura' && conteudo.length >= 0 && flag) {
       saveString('conteudo', conteudo)
+      setAnimVisivle(true)
+      player.seekTo(0)
+      player.play()
+    }
+  }, [acaoUsuario, conteudo.length >= 0, flag])
+  useEffect(() => {
+    animRef.current?.play();
 
-
-  }, [acaoUsuario, conteudo.length >= 0])
+  }, [animVisivle])
 
 
   const handleFAB = () => {
@@ -47,19 +72,54 @@ export const HomeScreen: FC<HomeScreenProps> = () => {
     else {
       setAcaoUsuario('leitura')
       setFlag(1)
+      setAnimVisivle(false)
 
     }
-
-
-
-
 
   }
 
 
 
   return (
-    <Screen style={themed($root)} contentContainerStyle={{ flex: 1 }} preset="fixed">
+    <Screen style={themed($root)} safeAreaEdges={["top", "bottom"]} contentContainerStyle={{ flex: 1 }} preset="fixed">
+
+      {animVisivle && acaoUsuario == 'leitura' && <LottieView
+
+        ref={animRef}
+        source={require('../../assets/animations/check.json')}
+        style={{ position: 'absolute', top: -40, width: 140, height: 40, alignSelf: 'center' }}
+        containerStyle={{
+          transform: [{ scale: 1.5 },]
+        }
+        }
+
+
+        onAnimationFinish={() => setAnimVisivle(false)}
+        resizeMode="cover"
+        loop={false}
+        speed={1.5}
+      />
+      }
+      {
+
+        acaoUsuario != 'leitura' && <LottieView
+
+          ref={animRef}
+          source={require('../../assets/animations/loading.json')}
+          style={{ position: 'absolute', top: -40, width: 140, height: 40, alignSelf: 'center' }}
+          containerStyle={{
+
+            transform: [{ scale: 1.5 },]
+
+          }
+          }
+          autoPlay
+          resizeMode="cover"
+          loop={true}
+        // speed={1.2}
+        />
+      }
+
       {
         //usuario escrevendo
         acaoUsuario != 'leitura' ?
@@ -89,7 +149,7 @@ export const HomeScreen: FC<HomeScreenProps> = () => {
                   setLines(lines + 1);
 
               }}
-              style={themed($textInputStyle)}
+              style={[themed($textInputStyle), { textAlign: 'left', color: theme.colors.palette.neutral600, fontStyle: 'italic' }]}
               secureTextEntry={true}
             />
 
@@ -133,9 +193,10 @@ export const HomeScreen: FC<HomeScreenProps> = () => {
               </TouchableWithoutFeedback>
 
               <TextInput
-              editable={false}
+                editable={false}
                 multiline
                 ref={inputRef}
+                showSoftInputOnFocus={false}
                 value={conteudo}
                 onChangeText={(text) => setConteudo(text)}
                 onContentSizeChange={() => {
@@ -144,7 +205,7 @@ export const HomeScreen: FC<HomeScreenProps> = () => {
                     setLines(lines + 1);
 
                 }}
-                style={themed($textInputStyle)}
+                style={[themed($textInputStyle), { fontStyle: 'italic', textAlign: 'left', color: theme.colors.palette.neutral900 }]}
                 secureTextEntry={true}
               />
 
@@ -177,9 +238,14 @@ const $textInputStyle: ThemedStyle<ViewStyle> = (theme) => ({
   flex: 1,
   padding: 0,
   width: '100%',
+  alignItems: 'stretch',
+  alignContent: 'stretch',
+  alignSelf: 'stretch',
+  justifyContent: 'space-evenly',
   paddingLeft: 10,
   paddingRight: 10,
-  fontSize: 20,
+  fontSize: FONT_SIZE,
+  lineHeight: LINE_HEIGHT,
   textAlignVertical: 'top',
 })
 
@@ -192,7 +258,7 @@ const $viewSuperLinesStyle: ThemedStyle<ViewStyle> = (theme) => ({
 })
 
 const $viewLinesStyle: ThemedStyle<ViewStyle> = (theme) => ({
-  marginTop: 22.5,
+  height: LINE_HEIGHT,
   borderBottomWidth: 1,
   borderBottomColor: '#b4b4b4',
 })
