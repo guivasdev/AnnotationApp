@@ -24,7 +24,7 @@ export const HomeScreen: FC<HomeScreenProps> = () => {
   const [conteudo, setConteudo] = useState('');
   const [flag, setFlag] = useState(0);
   const [animVisivle, setAnimVisivle] = useState(false);
-  const [lines, setLines] = useState(25);
+  const [lines, setLines] = useState(100);
   const [newHeight, setNewHeight] = useState(0)
   const inputRef = useRef<TextInput>(null);
   const animRef = useRef<LottieView>(null);
@@ -32,14 +32,10 @@ export const HomeScreen: FC<HomeScreenProps> = () => {
 
   const player = useAudioPlayer(audioSource);
 
-
-
-
-  const LINES = 25
-
-
+  const LINES = 100
 
   useEffect(() => {
+    console.log('teste2')
     animRef.current?.play();
 
     const contentPersistent = loadString('conteudo')
@@ -51,6 +47,7 @@ export const HomeScreen: FC<HomeScreenProps> = () => {
   }, [])
   useEffect(() => {
     //salvamento do conteúdo
+    console.log('teste1')
     if (acaoUsuario == 'leitura' && conteudo.length >= 0 && flag) {
       saveString('conteudo', conteudo)
       setAnimVisivle(true)
@@ -58,8 +55,10 @@ export const HomeScreen: FC<HomeScreenProps> = () => {
       player.play()
     }
   }, [acaoUsuario, conteudo.length >= 0, flag])
+
   useEffect(() => {
     animRef.current?.play();
+    console.log('teste2')
 
   }, [animVisivle])
 
@@ -81,19 +80,21 @@ export const HomeScreen: FC<HomeScreenProps> = () => {
 
 
   return (
-    <Screen style={themed($root)} safeAreaEdges={["top", "bottom"]} contentContainerStyle={{ flex: 1 }} preset="fixed">
+    <Screen KeyboardAvoidingViewProps={{ behavior: "padding" }} style={themed($root)} safeAreaEdges={["top", "bottom"]} contentContainerStyle={{ flex: 1 }} preset="fixed">
 
       {animVisivle && acaoUsuario == 'leitura' && <LottieView
 
         ref={animRef}
         source={require('../../assets/animations/check.json')}
-        style={{ position: 'absolute', top: -40, width: 140, height: 40, alignSelf: 'center' }}
-        containerStyle={{
-          transform: [{ scale: 1.5 },]
-        }
-        }
-
-
+        style={{
+          position: 'absolute',
+          width: 100,
+          height: 100,
+          zIndex: 2,
+          alignSelf: 'center',
+          top: '50%',
+          transform: [{ translateY: -50 }],
+        }}
         onAnimationFinish={() => setAnimVisivle(false)}
         resizeMode="cover"
         loop={false}
@@ -106,8 +107,15 @@ export const HomeScreen: FC<HomeScreenProps> = () => {
 
           ref={animRef}
           source={require('../../assets/animations/loading.json')}
-          style={{ position: 'absolute', top: -40, width: 140, height: 40, alignSelf: 'center' }}
-          containerStyle={{
+          style={{
+            zIndex: 2,
+            position: 'absolute',
+            width: 100,
+            height: 100,
+            alignSelf: 'center',
+            top: '10%',
+            transform: [{ translateY: -50 }],
+          }} containerStyle={{
 
             transform: [{ scale: 1.5 },]
 
@@ -130,7 +138,10 @@ export const HomeScreen: FC<HomeScreenProps> = () => {
             <TouchableWithoutFeedback
               onPress={() => inputRef.current?.focus()}
             >
-              <View style={themed($viewSuperLinesStyle)}>
+              <View style={[
+                themed($viewSuperLinesStyle),
+                { height: lines * LINE_HEIGHT },
+              ]}>
                 {Array.from({ length: lines }).map((_, i) => (
                   <View key={i} style={themed($viewLinesStyle)} />
                 ))
@@ -150,7 +161,6 @@ export const HomeScreen: FC<HomeScreenProps> = () => {
 
               }}
               style={[themed($textInputStyle), { textAlign: 'left', color: theme.colors.palette.neutral600, fontStyle: 'italic' }]}
-              secureTextEntry={true}
             />
 
 
@@ -206,7 +216,6 @@ export const HomeScreen: FC<HomeScreenProps> = () => {
 
                 }}
                 style={[themed($textInputStyle), { fontStyle: 'italic', textAlign: 'left', color: theme.colors.palette.neutral900 }]}
-                secureTextEntry={true}
               />
 
 
