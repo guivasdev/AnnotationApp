@@ -31,15 +31,20 @@ const AppStack = () => {
 
   return (
     <Stack.Navigator
+  
       screenOptions={{
+
+      
         headerShown: true,
-        navigationBarColor: colors.background,
-        contentStyle: {
+       
+        headerStyle: {
           backgroundColor: colors.background,
         },
+        headerTintColor: colors.text,
+        
       }}
     >
-      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="Home"  component={HomeScreen} />
       {/** 🔥 Your screens go here */}
       {/* IGNITE_GENERATOR_ANCHOR_APP_STACK_SCREENS */}
     </Stack.Navigator>

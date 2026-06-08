@@ -55,7 +55,16 @@
         }
       }
     ],
-    "expo-build-properties"
+    [
+      "expo-build-properties",
+      {
+        "android": {
+          "buildArchs": [
+            "arm64-v8a"
+          ]
+        }
+      }
+    ]
   ],
   "experiments": {
     "tsconfigPaths": true
@@ -63,6 +72,9 @@
   "extra": {
     "ignite": {
       "version": "11.5.0"
+    },
+    "eas": {
+      "projectId": "a369ab0f-ac07-4683-9dda-402da7d4a4f0"
     }
   }
 }
