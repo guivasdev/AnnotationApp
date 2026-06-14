@@ -8,14 +8,12 @@ export interface AnimationLottieProps {
   style?: StyleProp<ViewStyle>
 }
 
-export const AnimationLottie = (props: AnimationLottieProps) => {
+export const AnimationLottie = () => {
   const { themed } = useAppTheme();
-  const { animVisivle, setAnimVisivle,
-    state, animRefCheck, animRefLoading } = useHandleContext();
-
+  const { animVisivle, setAnimVisivle, animRefCheck } = useHandleContext();
   return (
     <View style={{ width: '100%', height: '100%', position: 'absolute' }}>
-      {animVisivle && state == 'Reading' &&
+      {animVisivle &&
         <LottieView
           ref={animRefCheck}
           source={require('../../assets/animations/check.json')}
@@ -26,23 +24,11 @@ export const AnimationLottie = (props: AnimationLottieProps) => {
           speed={1.8}
         />
       }
-
-      {state == 'Writing' &&
-        <LottieView
-          ref={animRefLoading}
-          source={require('../../assets/animations/loading.json')}
-          style={themed($animationStyleLoading)}
-          containerStyle={{ transform: [{ scale: 1.5 }] }}
-          resizeMode="cover"
-          autoPlay={true}
-          loop={true}
-        />
-      }
     </View>
   )
 }
 
-const $animationStyleCheck: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+const $animationStyleCheck: ThemedStyle<ViewStyle> = () => ({
   position: 'absolute',
   width: 100,
   height: 100,
@@ -50,14 +36,4 @@ const $animationStyleCheck: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   alignSelf: 'center',
   top: '50%',
   transform: [{ translateY: -50 }]
-})
-
-const $animationStyleLoading: ThemedStyle<ViewStyle> = ({ spacing }) => ({
-  zIndex: 2,
-  position: 'absolute',
-  width: 100,
-  height: 100,
-  alignSelf: 'center',
-  top: '10%',
-  transform: [{ translateY: -50 }],
 })
